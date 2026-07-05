@@ -155,15 +155,5 @@ automatically — no manual step needed after the first setup.
 The backend's `HelloController` already has `@CrossOrigin(origins = "*")`, so it will accept
 requests from your `github.io` domain without extra configuration.
 
-## Other free backend hosts (if you don't want Render)
 
-| Platform | Notes |
-|---|---|
-| **Railway** | Deploy from GitHub, generous free tier, detects the Dockerfile |
-| **Fly.io** | `fly launch` in `backend/`, then `fly deploy`, has free persistent volumes |
-| **Koyeb** | Connect GitHub repo, auto-deploys on push |
-
-Netlify is frontend/static-only like GitHub Pages, so it's a straight swap for the Pages step
-above if you'd rather use it — just connect the repo, set the publish directory to
-`frontend`, and skip the GitHub Actions workflow.
 
