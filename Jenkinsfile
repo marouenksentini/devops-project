@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_HUB_USER = "maroune6"
         IMAGE_NAME = "${DOCKER_HUB_USER}/devops-project"
-        IMAGE_TAG = "${BUILD_NUMBER}"
         RENDER_DEPLOY_HOOK = credentials('render-deploy-hook')
     }
 
@@ -37,16 +36,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}", "./backend")
+                    docker.build("${IMAGE_NAME}:latest", "./backend")
                 }
-                echo "Docker image built: ${IMAGE_NAME}:${IMAGE_TAG}"
-            }
-        }
-
-        stage('Tag Latest') {
-            steps {
-                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
-                echo "Tagged as latest"
+                echo "Docker image built: ${IMAGE_NAME}:latest"
             }
         }
 
@@ -54,7 +46,6 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image("${IMAGE_NAME}:${IMAGE_TAG}").push()
                         docker.image("${IMAGE_NAME}:latest").push()
                     }
                 }
@@ -89,7 +80,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo "SUCCESS! Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "SUCCESS! Image pushed: ${IMAGE_NAME}:latest"
         }
         failure {
             echo "Pipeline failed!"
