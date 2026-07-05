@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-    DOCKER_HUB_USER = "marouen6"
-    IMAGE_NAME = "${DOCKER_HUB_USER}/devops-project"
-    RENDER_DEPLOY_HOOK = credentials('render-deploy-hook')
+        DOCKER_HUB_USER = "marouen6"
+        IMAGE_NAME = "${DOCKER_HUB_USER}/devops-project"
+        RENDER_DEPLOY_HOOK = credentials('render-deploy-hook')
     }
 
     stages {
