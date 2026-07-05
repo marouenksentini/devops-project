@@ -1,0 +1,23 @@
+version: '3.8'
+
+# Use this ONLY for your own manual local testing, on different host ports
+# and a different Docker Compose project name than Jenkins uses. This way
+# your local `docker-compose up` never collides with the containers Jenkins
+# starts during its pipeline run.
+#
+# Run it with:
+#   docker-compose -f docker-compose.yml -f docker-compose.local.yml -p devops-project-local up -d --build
+#
+# Stop it with:
+#   docker-compose -p devops-project-local down 
+
+services:
+  backend:
+    container_name: devops-project-backend-local
+    ports:
+      - "9090:8080"
+
+  frontend:
+    container_name: devops-project-frontend-local
+    ports:
+      - "9000:80"

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps_Project</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 2rem 1rem;
+    }
+    .container {
+        text-align: center;
+        padding: 2.5rem 2rem;
+        background: rgba(255,255,255,0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        max-width: 720px;
+        width: 100%;
+    }
+    h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .subtitle { opacity: 0.85; margin-bottom: 1.5rem; }
+
+    .clock {
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .clock-label { font-size: 0.85rem; opacity: 0.75; margin-bottom: 1.5rem; }
+
+    .stats-row {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+    .stat-card {
+        background: rgba(255,255,255,0.15);
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        min-width: 140px;
+    }
+    .stat-number { font-size: 1.8rem; font-weight: 700; }
+    .stat-label { font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem; }
+
+    .status {
+        padding: 0.9rem 1.5rem;
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+        margin-top: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    button {
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 25px;
+        background: #fff;
+        color: #667eea;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+        margin: 0.3rem;
+    }
+    button:hover { transform: scale(1.05); }
+
+    .tech-stack {
+        display: flex;
+        gap: 0.6rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .badge {
+        background: rgba(255,255,255,0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .diagram-wrap {
+        margin-top: 2rem;
+        background: rgba(0,0,0,0.15);
+        border-radius: 14px;
+        padding: 1rem;
+    }
+    .diagram-wrap svg { width: 100%; height: auto; display: block; }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 DevOps Project</h1>
+        <p class="subtitle">Spring Boot + SQLite + Docker + Jenkins + GitHub</p>
+
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="clock-label" id="clockDate">Loading Tunis time…</div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number" id="clickCount">–</div>
+                <div class="stat-label">Total Clicks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="visitorCount">–</div>
+                <div class="stat-label">Total Visits</div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Click the button to check the backend API</div>
+
+        <button onclick="checkBackend()">Check Backend API</button>
+        <button onclick="registerClick()">Click Me 👆</button>
+
+        <div class="tech-stack">
+            <span class="badge">☕ Java 17</span>
+            <span class="badge">🍃 Spring Boot</span>
+            <span class="badge">🗄️ SQLite</span>
+            <span class="badge">🐳 Docker</span>
+            <span class="badge">📦 Jenkins</span>
+            <span class="badge">🐙 GitHub</span>
+        </div>
+
+        <div class="diagram-wrap">
+            <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 Z" fill="#ffffff" opacity="0.8"/>
+                    </marker>
+                </defs>
+                <!-- GitHub -->
+                <rect x="10" y="70" width="100" height="50" rx="10" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="1.5"/>
+                <text x="60" y="99" font-size="13" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">GitHub</text>
+                <line x1="110" y1="95" x2="150" y2="95" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.8"/>
+
+                <!-- Jenkins -->
+                <rect x="152" y="70" width="100" height="50" rx="10" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="1.5"/>
+                <text x="202" y="99" font-size="13" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">Jenkins</text>
+                <line x1="252" y1="95" x2="292" y2="95" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.8"/>
+
+                <!-- Docker Build -->
+                <rect x="294" y="70" width="110" height="50" rx="10" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="1.5"/>
+                <text x="349" y="93" font-size="12" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">Docker</text>
+                <text x="349" y="108" font-size="12" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">Build+Push</text>
+                <line x1="404" y1="95" x2="444" y2="95" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.8"/>
+
+                <!-- Docker Hub -->
+                <rect x="446" y="70" width="100" height="50" rx="10" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="1.5"/>
+                <text x="496" y="93" font-size="12" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">Docker Hub</text>
+                <text x="496" y="108" font-size="11" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif" opacity="0.8">registry</text>
+
+                <!-- Down arrow to deploy -->
+                <line x1="349" y1="120" x2="349" y2="150" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.8"/>
+                <rect x="230" y="152" width="240" height="34" rx="10" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="1.5"/>
+                <text x="350" y="174" font-size="12" fill="#fff" text-anchor="middle" font-family="Segoe UI, sans-serif">docker-compose up (backend + nginx)</text>
+
+                <text x="60" y="65" font-size="11" fill="#fff" text-anchor="middle" opacity="0.8" font-family="Segoe UI, sans-serif">push</text>
+                <text x="202" y="65" font-size="11" fill="#fff" text-anchor="middle" opacity="0.8" font-family="Segoe UI, sans-serif">webhook</text>
+                <text x="349" y="65" font-size="11" fill="#fff" text-anchor="middle" opacity="0.8" font-family="Segoe UI, sans-serif">build image</text>
+                <text x="496" y="65" font-size="11" fill="#fff" text-anchor="middle" opacity="0.8" font-family="Segoe UI, sans-serif">push image</text>
+            </svg>
+        </div>
+    </div>
+
+<script>
+    // When served from GitHub Pages, this file is on a different domain than the backend,
+    // so it must point at the full Render URL. Replace with your real Render URL after step 3.
+    // When running locally via docker-compose, leave this as '/api' (nginx proxies it).
+    const API_BASE = window.location.hostname.endsWith('github.io')
+        ? 'https://YOUR-APP-NAME.onrender.com/api'
+        : '/api';
+
+    // Live Tunis clock: sync once with server, then tick client-side every second
+    let serverTunisTime = null;
+    let syncedAtMs = null;
+
+    async function syncClock() {
+        try {
+            const res = await fetch(API_BASE + '/time');
+            const data = await res.json();
+            serverTunisTime = new Date(data.iso);
+            syncedAtMs = Date.now();
+        } catch (e) {
+            // Fallback: use browser's Africa/Tunis rendering
+            serverTunisTime = null;
+        }
+    }
+
+    function tickClock() {
+        let now;
+        if (serverTunisTime && syncedAtMs) {
+            now = new Date(serverTunisTime.getTime() + (Date.now() - syncedAtMs));
+        } else {
+            now = new Date();
+        }
+        const opts = { timeZone: 'Africa/Tunis', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const dateOpts = { timeZone: 'Africa/Tunis', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB', opts);
+        document.getElementById('clockDate').textContent = now.toLocaleDateString('en-GB', dateOpts) + ' · Tunis (UTC+1)';
+    }
+
+    async function checkBackend() {
+        const statusDiv = document.getElementById('status');
+        statusDiv.textContent = 'Loading...';
+        try {
+            const response = await fetch(API_BASE + '/hello');
+            const data = await response.text();
+            statusDiv.textContent = '✅ Backend says: ' + data;
+            statusDiv.style.background = 'rgba(0,255,0,0.2)';
+        } catch (error) {
+            statusDiv.textContent = '❌ Backend not reachable. Is it running?';
+            statusDiv.style.background = 'rgba(255,0,0,0.2)';
+        }
+    }
+
+    async function registerClick() {
+        try {
+            const res = await fetch(API_BASE + '/click', { method: 'POST' });
+            const data = await res.json();
+            document.getElementById('clickCount').textContent = data.count;
+        } catch (e) {
+            document.getElementById('clickCount').textContent = 'err';
+        }
+    }
+
+    async function loadStats() {
+        try {
+            const clickRes = await fetch(API_BASE + '/click');
+            const clickData = await clickRes.json();
+            document.getElementById('clickCount').textContent = clickData.count;
+        } catch (e) { /* backend not up yet */ }
+
+        try {
+            const visitRes = await fetch(API_BASE + '/visit');
+            const visitData = await visitRes.json();
+            document.getElementById('visitorCount').textContent = visitData.visitors;
+        } catch (e) { /* backend not up yet */ }
+    }
+
+    syncClock().then(tickClock);
+    setInterval(tickClock, 1000);
+    setInterval(syncClock, 60000); // re-sync with server once a minute
+    loadStats();
+</script>
+</body>
+</html>
