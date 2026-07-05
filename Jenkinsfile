@@ -18,7 +18,7 @@ pipeline {
         stage('Build JAR') {
             steps {
                 dir('backend') {
-                    sh 'mvn clean package -DskipTests'
+                    bat 'mvn clean package -DskipTests'
                 }
                 echo "JAR built successfully"
             }
@@ -27,7 +27,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('backend') {
-                    sh 'mvn test'
+                    bat 'mvn test'
                 }
                 echo "Tests passed"
             }
@@ -55,21 +55,17 @@ pipeline {
 
         stage('Trigger Render Deploy') {
             steps {
-                sh '''
-                    curl -f -X POST "$RENDER_DEPLOY_HOOK"
-                '''
+                bat 'curl -f -X POST "%RENDER_DEPLOY_HOOK%"'
                 echo "Render redeploy triggered - it will pull ${IMAGE_NAME}:latest"
             }
         }
 
         stage('Local sanity check (optional)') {
             steps {
-                sh '''
-                    docker-compose down || true
-                    docker-compose up -d --build
-                    sleep 10
-                    curl -f http://localhost:8080/api/health || exit 1
-                '''
+                bat 'docker-compose down'
+                bat 'docker-compose up -d --build'
+                bat 'ping -n 11 127.0.0.1 > nul'
+                bat 'curl -f http://localhost:8080/api/health'
             }
         }
     }
@@ -77,7 +73,7 @@ pipeline {
     post {
         always {
             echo "Pipeline completed - Build #${BUILD_NUMBER}"
-            cleanWs()
+            deleteDir()
         }
         success {
             echo "SUCCESS! Image pushed: ${IMAGE_NAME}:latest"
