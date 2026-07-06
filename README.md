@@ -1,159 +1,159 @@
-# DevOps_Project
+# 🚀 Showcase du Projet DevOps
 
-Full-stack demo: Java Spring Boot backend (with a persistent SQLite click/visitor counter and
-a live Tunis-time endpoint), a plain HTML/CSS/JS frontend served by nginx, Docker Compose to
-run both together, and a Jenkins pipeline that builds the image and pushes it to Docker Hub.
+Une application web full-stack comprenant des flux CI/CD automatisés, des environnements conteneurisés et un suivi des métriques en temps réel.
 
-## Project structure
+**🔗 Site Web Live :** [https://marouenksentini.github.io/devops-project/](https://marouenksentini.github.io/devops-project/)
+
+---
+
+## 🛠️ Présentation du Système
+
+Ce projet met en œuvre un cycle de vie d'infrastructure entièrement automatisé :
+
+- **Frontend :** Interface statique HTML/CSS/JS hébergée localement via Nginx ou distribuée en production sur **GitHub Pages**.
+- **Backend :** Application Java Spring Boot connectée à une base de données persistante **SQLite** pour le suivi des compteurs de clics et de visiteurs.
+- **Persistance des Données :** Les compteurs sont stockés dans un fichier SQLite situé à l'emplacement `/app/data/app.db` à l'intérieur du conteneur backend, monté sur le volume nommé `devops-project-sqlite-data` pour survivre aux redémarrages.
+
+---
+
+## 📂 Structure du Projet
 
 ```
 DevOps_Project/
-├── backend/
-│   ├── src/main/java/com/example/demo/
-│   │   ├── DemoApplication.java
-│   │   ├── controller/HelloController.java
-│   │   └── service/StatsService.java
-│   ├── src/main/resources/application.properties
-│   ├── pom.xml
-│   └── Dockerfile
-├── frontend/
-│   └── index.html
-├── docker-compose.yml
-├── docker-compose.local.yml
-├── nginx.conf
-├── Jenkinsfile
-├── .github/workflows/deploy-pages.yml
-└── README.md
+├── backend/                       # Application Java Spring Boot
+│   ├── src/main/java/...          # Contrôleurs, services & logique SQLite
+│   ├── src/main/resources/        # Profils de configuration
+│   ├── pom.xml                    # Gestion des dépendances Maven
+│   └── Dockerfile                 # Emballage de l'image multi-stages
+├── frontend/                      # Fichiers sources de l'interface
+│   └── index.html                 # Tableau de bord de l'application
+├── .github/workflows/             # Automatisation GitHub Actions
+│   └── deploy-pages.yml           # Pipeline de déploiement du frontend statique
+├── docker-compose.yml             # Configuration principale de production
+├── docker-compose.local.yml       # Profil d'orchestration pour les tests locaux
+├── nginx.conf                     # Fichier de configuration Nginx
+└── Jenkinsfile                    # Cycle de vie du pipeline backend automatique
 ```
 
-## API endpoints
+---
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/hello` | GET | Simple greeting, used for the "Check Backend" button |
-| `/api/health` | GET | Plain health check |
-| `/api/time` | GET | Current date/time in `Africa/Tunis` |
-| `/api/click` | GET / POST | Read / increment the SQLite click counter |
-| `/api/visit` | GET | Records a visit (by IP) and returns the running total |
-| `/api/visit/count` | GET | Reads the visitor total without recording a new visit |
+## 🏗️ Pipeline Core Backend (Jenkins)
 
-Click and visitor counts are stored in a SQLite file at `/app/data/app.db` inside the backend
-container. In `docker-compose.yml` that path is mounted on a named volume
-(`devops-project-sqlite-data`) so the counts survive container restarts and redeploys.
+Voici l'enchaînement visuel des étapes exécutées automatiquement par Jenkins à chaque commit :
 
-## Run locally without conflicting with Jenkins
+```
+ ┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+ │ Checkout │ ──> │ Build JAR │ ──> │ Unit Tests │ ──> │ Docker Build │
+ └──────────┘     └───────────┘     └────────────┘     └──────────────┘
+                                                              │
+ ┌──────────────┐     ┌─────────────┐     ┌──────────────┐    │
+ │ Render Hook  │ <── │ Docker Push │ <── │  Image Tag   | <──┘
+ └──────────────┘     └─────────────┘     └──────────────┘
+```
 
-Jenkins is installed on your own machine, and the pipeline's last stage also runs
-`docker-compose up`. If you also run `docker-compose up` manually for testing, both
-will fight over the same container names (`devops-project-backend`, `devops-project-frontend`) and the
-same host ports (`8080`, `80`) — whichever runs second will error out or stop the
-other's containers.
+---
 
-To avoid that, use `docker-compose.local.yml` for your own manual testing. It gives
-your local run different container names, different host ports, and a different
-Compose "project name", so it's completely isolated from anything Jenkins does:
+## 🚀 Exécution & Workflows d'Automatisation
+
+### 1. Sandbox de Test Local Isolé
+
+Pour tester l'application sur votre machine sans entrer en conflit de ports avec vos outils de production (`8080`/`80`), utilisez ce profil dédié :
 
 ```bash
-# start your own local copy, on ports 9090 (backend) and 9000 (frontend)
+# Lancer les conteneurs locaux isolés sur les ports 9090 (Backend) et 9000 (Frontend)
 docker-compose -f docker-compose.yml -f docker-compose.local.yml -p devops-project-local up -d --build
 
-# test it
+# Vérifier la réponse du backend
 curl http://localhost:9090/api/hello
-# open http://localhost:9000 in your browser
 
-# stop it when done
+# Arrêter et supprimer l'infrastructure de test local
 docker-compose -p devops-project-local down
 ```
 
-Meanwhile Jenkins keeps using the plain `docker-compose.yml` (ports 8080/80,
-default project name) in its own pipeline run — the two never touch the same
-container names or ports, so you can leave your local copy running while Jenkins
-builds, or trigger a Jenkins build while testing locally, with no conflicts either way.
+### 2. Automatisation et Déploiement Cloud
 
-## GitHub → Jenkins webhook
+- **Flux Frontend :** Entièrement pris en charge par **GitHub Actions** qui déploie automatiquement les fichiers statiques du dossier `frontend/` vers GitHub Pages lors d'un push sur `main`.
+- **Flux Backend :** GitHub notifie Jenkins via un webhook (`http://YOUR_JENKINS_URL:8080/github-webhook/`). Après avoir compilé et poussé l'image sur Docker Hub (`marouen6/devops-project:latest`), Jenkins déclenche un webhook de déploiement sécurisé sur **Render** pour mettre à jour l'application instantanément et sans coupure.
 
-1. In your GitHub repo: **Settings → Webhooks → Add webhook**
-2. Payload URL: `http://YOUR_JENKINS_URL:8080/github-webhook/`
-3. Content type: `application/json`
-4. Events: just `push`
-5. Active: checked
+---
 
-In Jenkins, create a **Pipeline** job:
-- Check **"GitHub hook trigger for GITScm polling"**
-- Pipeline script from SCM → Git → your repo URL, script path `Jenkinsfile`
+## 🔧 Configuration Jenkins
 
-## Jenkins prerequisites
+### Prérequis Plugins
 
-Install these plugins (Manage Jenkins → Plugins):
+Installer ces plugins (Manage Jenkins → Plugins) :
+
 - Docker Pipeline
 - Docker Commons
 - GitHub Integration
 - Pipeline
 - Credentials Binding
 
-Add these credentials (Manage Jenkins → Credentials):
-- `docker-hub-username` — Secret text, your Docker Hub username
-- `docker-hub-credentials` — Username/password type, your Docker Hub login (used to push images)
+### Credentials
 
-The Jenkins host itself needs Docker and docker-compose installed and the `jenkins` user added
-to the `docker` group so pipeline stages can run `docker build` / `docker-compose up`.
+Ajouter ces credentials (Manage Jenkins → Credentials) :
 
-## Pipeline stages
+| ID  | Type | Description |
+| --- | --- | --- |
+| `docker-hub-username` | Secret text | Votre username Docker Hub |
+| `docker-hub-credentials` | Username/Password | Login Docker Hub pour push |
+| `render-deploy-hook` | Secret text | URL du deploy hook Render |
 
-`Checkout → Build JAR → Test → Build Docker Image → Tag latest → Push to Docker Hub → Deploy with Docker Compose → Verify Deployment`
+### Webhook GitHub
 
-Each successful push publishes `YOUR_DOCKERHUB_USER/devops-project:<build-number>` and
-`:latest` to Docker Hub.
+1. Dans votre repo GitHub : **Settings → Webhooks → Add webhook**
+2. Payload URL : `http://YOUR_JENKINS_URL:8080/github-webhook/`
+3. Content type : `application/json`
+4. Events : `push`
+5. Active : ✅
 
-## Deploy for free: GitHub Pages (frontend) + Render (backend)
+---
 
-GitHub Pages only serves static files — it cannot run Java, Docker, or SQLite. So the
-frontend and backend deploy to two different places, and the frontend calls the backend
-over the internet instead of through nginx.
+## 🌍 Déploiement Cloud
 
-### 1. Backend on Render
+### GitHub Pages (Frontend)
 
-1. Push this repo to GitHub if you haven't already.
-2. Go to [render.com](https://render.com) → New → **Web Service** → connect your repo.
-3. Root directory: `backend`
-4. Render will detect the `Dockerfile` automatically, or set:
-   - Build command: `docker build -t app .`
-   - Start command: `docker run -p 8080:8080 app`
-5. Under the service's **Settings → Deploy Hook**, copy the deploy hook URL — you'll need it
-   for Jenkins in step 3.
-6. Once deployed, note your service URL, e.g. `https://devops-project-xxxx.onrender.com`.
+1. Dans `frontend/index.html`, remplacer `YOUR-APP-NAME.onrender.com` par votre URL Render réelle
+2. GitHub repo : **Settings → Pages → Source: GitHub Actions**
+3. Le workflow `.github/workflows/deploy-pages.yml` publie automatiquement le dossier `frontend/` sur chaque push vers `main`
+4. URL : `https://marouenksentini.github.io/devops-project/`
 
-Alternative: instead of building from source, point Render at your Docker Hub image
-(`maroune6/devops-project:latest`) under **New → Web Service → Deploy an existing image**.
-That way Jenkins builds and pushes the image, and Render just pulls it — no source build on
-Render's side.
+### Render (Backend)
 
-Note: Render's free tier has an ephemeral filesystem, so the SQLite click/visitor counts
-reset on every redeploy unless you attach a persistent disk (paid tier) or a Render Postgres
-add-on instead of SQLite.
+1. Aller sur [render.com](https://render.com) → New → **Web Service**
+2. Connecter votre repo GitHub
+3. Root directory : `backend`
+4. Render détecte automatiquement le `Dockerfile`
+5. Alternative : pointer vers l'image Docker Hub `marouen6/devops-project:latest`
 
-### 2. Frontend on GitHub Pages
+> **Note :** Le tier gratuit de Render a un filesystem éphémère. Les compteurs SQLite se réinitialisent à chaque redéploiement sauf si vous ajoutez un disque persistant (payant) ou utilisez Render Postgres.
 
-1. In `frontend/index.html`, replace `YOUR-APP-NAME.onrender.com` with your real Render URL
-   from step 1.
-2. In your GitHub repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. The included workflow `.github/workflows/deploy-pages.yml` publishes the `frontend/`
-   folder automatically on every push to `main`. Your site will be live at
-   `https://YOUR_USERNAME.github.io/YOUR_REPO/`.
+---
 
-### 3. Jenkins → Render handoff
+## 📝 API Endpoints
 
-Add one more Jenkins credential (Manage Jenkins → Credentials):
-- Kind: Secret text → ID: `render-deploy-hook` → value: the deploy hook URL from Render step 1.5
+| Endpoint | Méthode | Description |
+| --- | --- | --- |
+| `/api/hello` | GET | Message de bienvenue |
+| `/api/health` | GET | Vérification de santé |
+| `/api/time` | GET | Heure actuelle en Tunisie (dd/MM/yyyy HH:mm:ss) |
+| `/api/click` | GET / POST | Lire / incrémenter le compteur de clics |
+| `/api/click/{buttonId}` | GET / POST | Lire / incrémenter un compteur spécifique |
+| `/api/visit` | GET | Enregistrer une visite et retourner le total |
+| `/api/visit/count` | GET | Lire le total des visiteurs |
+| `/api/visitors/total` | GET | Total et visiteurs uniques |
+| `/api/stats` | GET | Toutes les statistiques du site |
 
-The updated `Jenkinsfile` now ends with a **Trigger Render Deploy** stage that calls this
-hook after pushing the new image to Docker Hub, so Render redeploys the latest image
-automatically — no manual step needed after the first setup.
+---
 
-### CORS note
+## 🎯 Objectif du Projet
 
-The backend's `HelloController` already has `@CrossOrigin(origins = "*")`, so it will accept
-requests from your `github.io` domain without extra configuration.
+Automatiser le build, test, containerisation et déploiement d'une application full-stack en utilisant les outils DevOps modernes et les meilleures pratiques.
 
+---
 
+**Développeur :** marouenksentini  
+**Docker Hub :** marouen6  
+**Repository :** devops-project
 
+Made with ❤️ in Tunisia 🇹🇳
