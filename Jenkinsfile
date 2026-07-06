@@ -69,7 +69,6 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             echo "Pipeline completed - Build #${BUILD_NUMBER}"
